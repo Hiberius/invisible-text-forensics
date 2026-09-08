@@ -1,0 +1,17 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python3 tests/test_itf.py
+      - name: self check
+        # tests/ deliberately contains live payloads, so it is excluded here
+        run: python3 scripts/itf.py scan SKILL.md README.md references scripts --fail-on critical
